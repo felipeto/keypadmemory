@@ -1,0 +1,158 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Keypad Memory</title>
+    <style>
+     .display {
+        width: 190px; 
+        margin: 0 auto 10px; 
+        background-color: #f0f0f0; 
+        border: 1px solid #d3d3d3;
+        text-align: right; 
+        padding: 10px; 
+        font-size: 20px;
+        border-radius: 5px;
+        color: #333;
+      }
+    .calculator-grid {
+        display: grid;
+        width: 200px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        margin:10px auto;
+      }
+    
+      .button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 60px;
+        width: 60px;
+        background-color: #f0f0f0;
+        border: 1px solid #d3d3d3;
+        font-size: 20px;
+        user-select: none;
+        border-radius: 50%;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+    .wide {
+        grid-column: span 3;
+        border-radius: 10px;
+        background-color: red;
+        color: white;
+      width: 200px;
+      }
+    
+      .button:hover {
+        background-color: #e9e9e9;
+      }
+    
+      .button:active {
+        transform: scale(0.9); 
+        background-color: #ccc; 
+      }
+    
+      .clear {
+        background-color: orange; 
+      }
+    
+      .clear:active {
+        background-color: #e67e22; 
+      }
+    
+      .enter {
+        background-color: green;
+        color: white;
+      }
+    
+      .enter:active {
+        background-color: #27ae60; 
+      }
+     .celebration {
+        text-align: center;
+        font-size: 24px;
+        height: 50px;
+        line-height: 50px;
+        visibility: hidden; 
+      }
+    </style>
+    <script>
+      let clearCount = 0;
+      const memoryValue = localStorage.getItem('memory') || '';
+    
+      document.querySelectorAll('.button').forEach(function(button) {
+        button.addEventListener('click', function() {
+          const display = document.getElementById('display');
+          const memoryButton = document.getElementById('memoryButton');
+          const celebration = document.getElementById('celebration');
+    
+          if (this.textContent === 'Clear') {
+            clearCount++;
+            if (clearCount === 3) {
+              localStorage.removeItem('memory');
+              memoryButton.style.display = ''; // Show the memory button again
+              clearCount = 0; // Reset clear count
+            }
+            display.textContent = '0';
+            celebration.style.visibility = 'hidden';
+          } else if (this.textContent === 'Enter') {
+            if(memoryValue && memoryValue == display.textContent)
+              {
+            confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+              }
+          } else if (this.textContent === 'Memory') {
+            if (display.textContent !== '0' && display.textContent !== '') {
+              localStorage.setItem('memory', display.textContent);
+              memoryButton.style.display = 'none'; // Hide the memory button
+            }
+          } else {
+            if (display.textContent === '0' || clearCount > 0) display.textContent = '';
+            display.textContent += this.textContent;
+            clearCount = 0; // Reset clear count if any other button is pressed
+            // Check if current display starts with memory value
+            if (memoryValue && memoryValue.startsWith(display.textContent)) {
+              celebration.style.visibility = 'visible';
+            } else {
+              celebration.style.visibility = 'hidden';
+            }
+          }
+        });
+      });
+    
+      document.addEventListener('DOMContentLoaded', function() {
+        const memoryButton = document.getElementById('memoryButton');
+        if (localStorage.getItem('memory')) {
+          memoryButton.style.display = 'none';
+        }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  </head>
+  <body>
+    
+  
+    <div class="display" readonly="readonly" id="display">0</div>
+    <div class="calculator-grid">
+      <div class="button">7</div>
+      <div class="button">8</div>
+      <div class="button">9</div>
+      <div class="button">4</div>
+      <div class="button">5</div>
+      <div class="button">6</div>
+      <div class="button">1</div>
+      <div class="button">2</div>
+      <div class="button">3</div>
+      <div class="button clear">Clear</div>
+      <div class="button">0</div>
+      <div class="button enter">Enter</div>
+      <div class="button wide"  id="memoryButton">Memory</div>
+      <div class="celebration" id="celebration">🎉</div>
+    </div>
+
+  </body>
+  
+</html>
